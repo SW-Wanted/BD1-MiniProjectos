@@ -1,63 +1,201 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using MySql.Data.MySqlClient;
 using MiniProjecto01.Models;
 using MiniProjecto01.Repositories;
 
 namespace MiniProjecto01.Data
 {
-    internal class StudentRepository : IStudentRepository
+    internal class StudentRepository : IStudentRepository, IDisposable
     {
-        private readonly List<Student> _students = new();
-        private int _nextId = 1;
+        private readonly Database _database;
+
+        public StudentRepository(Database database)
+        {
+            _database = database;
+        }
 
         public Student? GetById(int id)
         {
-            return _students.FirstOrDefault(s => s.Id == id);
+            try
+            {
+                var conn = _database.GetConnection();
+                using var cmd = new MySqlCommand("SELECT Id, Name, Email FROM Students WHERE Id = @Id", conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    return new Student
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Name = reader.GetString("Name"),
+                        Email = reader.GetString("Email")
+                    };
+                }
+
+                return null;
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException($"Erro ao buscar estudante por ID: {ex.Message}", ex);
+            }
         }
 
         public IEnumerable<Student> GetAll()
         {
-            return _students.ToList();
+            var students = new List<Student>();
+            
+            try
+            {
+                var conn = _database.GetConnection();
+                using var cmd = new MySqlCommand("SELECT Id, Name, Email FROM Students", conn);
+                using var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    students.Add(new Student
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Name = reader.GetString("Name"),
+                        Email = reader.GetString("Email")
+                    });
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException($"Erro ao buscar todos os estudantes: {ex.Message}", ex);
+            }
+
+            return students;
         }
 
         public bool Add(Student student)
         {
             if (student == null) return false;
-            
-            student.Id = _nextId++;
-            _students.Add(student);
-            return true;
+
+            try
+            {
+                var conn = _database.GetConnection();
+                using var cmd = new MySqlCommand(
+                    "INSERT INTO Students (Name, Email) VALUES (@Name, @Email)", conn);
+                
+                cmd.Parameters.AddWithValue("@Name", student.Name);
+                cmd.Parameters.AddWithValue("@Email", student.Email);
+
+                var rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+            catch (MySqlException ex) when (ex.Number == 1062) // Duplicate entry
+            {
+                return false;
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException($"Erro ao adicionar estudante: {ex.Message}", ex);
+            }
         }
 
         public bool Update(Student student)
         {
             if (student == null) return false;
-            
-            var existing = GetById(student.Id);
-            if (existing == null) return false;
 
-            existing.Name = student.Name;
-            existing.Email = student.Email;
-            return true;
+            try
+            {
+                var conn = _database.GetConnection();
+                using var cmd = new MySqlCommand(
+                    "UPDATE Students SET Name = @Name, Email = @Email WHERE Id = @Id", conn);
+                
+                cmd.Parameters.AddWithValue("@Id", student.Id);
+                cmd.Parameters.AddWithValue("@Name", student.Name);
+                cmd.Parameters.AddWithValue("@Email", student.Email);
+
+                var rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException($"Erro ao atualizar estudante: {ex.Message}", ex);
+            }
         }
 
         public bool Delete(int id)
         {
-            var student = GetById(id);
-            if (student == null) return false;
-            
-            return _students.Remove(student);
+            try
+            {
+                var conn = _database.GetConnection();
+                using var cmd = new MySqlCommand("DELETE FROM Students WHERE Id = @Id", conn);
+                cmd.Parameters.AddWithValue("@Id", id);
+
+                var rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException($"Erro ao deletar estudante: {ex.Message}", ex);
+            }
         }
 
-        // Métodos específicos de IStudentRepository
         public Student? GetByEmail(string email)
         {
-            return _students.FirstOrDefault(s => s.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+            try
+            {
+                var conn = _database.GetConnection();
+                using var cmd = new MySqlCommand("SELECT Id, Name, Email FROM Students WHERE Email = @Email", conn);
+                cmd.Parameters.AddWithValue("@Email", email);
+
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    return new Student
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Name = reader.GetString("Name"),
+                        Email = reader.GetString("Email")
+                    };
+                }
+
+                return null;
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException($"Erro ao buscar estudante por email: {ex.Message}", ex);
+            }
         }
 
         public IEnumerable<Student> GetByNameContains(string name)
         {
-            return _students.Where(s => s.Name.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            var students = new List<Student>();
+            
+            try
+            {
+                var conn = _database.GetConnection();
+                using var cmd = new MySqlCommand(
+                    "SELECT Id, Name, Email FROM Students WHERE Name LIKE @Name", conn);
+                cmd.Parameters.AddWithValue("@Name", $"%{name}%");
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    students.Add(new Student
+                    {
+                        Id = reader.GetInt32("Id"),
+                        Name = reader.GetString("Name"),
+                        Email = reader.GetString("Email")
+                    });
+                }
+            }
+            catch (MySqlException ex)
+            {
+                throw new InvalidOperationException($"Erro ao buscar estudantes por nome: {ex.Message}", ex);
+            }
+
+            return students;
+        }
+
+        public void Dispose()
+        {
+            _database?.Dispose();
         }
     }
 }

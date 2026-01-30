@@ -12,6 +12,9 @@ namespace MiniProjecto01.UI
             _studentService = studentService;
         }
 
+        /// <summary>
+        /// Rodar o aplicativo
+        /// </summary>
         public void Run()
         {
             Console.WriteLine("=== Um Sistema Qualquer ===\n");

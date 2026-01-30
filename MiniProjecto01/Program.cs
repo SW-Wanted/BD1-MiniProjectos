@@ -30,7 +30,7 @@ var database = host.Services.GetRequiredService<Database>();
 Console.WriteLine("Testando conexão com MySQL...");
 if (database.TestConnection())
 {
-    Console.WriteLine("✓ Conexão bem-sucedida!\n");
+    Console.WriteLine("Conexão bem-sucedida!\n");
     
     // Obter a instância da App através do DI Container e executar
     using (var scope = host.Services.CreateScope())
@@ -41,6 +41,6 @@ if (database.TestConnection())
 }
 else
 {
-    Console.WriteLine("✗ Falha ao conectar ao banco de dados.");
+    Console.WriteLine("Falha ao conectar ao banco de dados.");
     Console.WriteLine("Verifique a connection string e se o MySQL está rodando.");
 }

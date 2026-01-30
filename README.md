@@ -1,13 +1,17 @@
-﻿# Sistema de Gestão Académica - ISPTEC
+﻿# Base de Dados 1
 
-Projeto de exemplo para demonstração de conceitos de Base de Dados I.
+Exame de Banco de dados 1 - Componente prática 10v
 
 ## ⚠️ Aviso Importante
 
 **Todos os dados neste projeto são FICTÍCIOS e foram criados apenas para fins educacionais e de demonstração. Qualquer semelhança com pessoas, lugares ou situações reais é mera coincidência.**
 
 ## Estrutura do Projeto
+Este projecto é composto por:
+- `MiniProjecto01` - Preparação para o Exame
+- `MiniProjecto02` - Exame
 
+Em `MiniProjecto02`:
 - `Scripts/isptec_database.sql` - Criação de tabelas e dados iniciais
 - `Scripts/isptec_queries.sql` - Exemplos de queries SQL
 
@@ -18,5 +22,5 @@ Projeto de exemplo para demonstração de conceitos de Base de Dados I.
 
 ## Tecnologias
 
-- MySQL 8.0+
-- .NET 8
+- .NET 10.0
+- MySQL 9.5.0

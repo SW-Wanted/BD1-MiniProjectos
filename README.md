@@ -1,6 +1,6 @@
 ﻿# Base de Dados 1
 
-Exame de Banco de dados 1 - Componente prática 10v
+Exame de Banco de Dados 1 - Componente Prática (50%)
 
 ## ⚠️ Aviso Importante
 

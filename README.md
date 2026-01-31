@@ -12,8 +12,8 @@ Este projecto é composto por:
 - `MiniProjecto02` - Exame
 
 Em `MiniProjecto02`:
-- `Scripts/isptec_database.sql` - Criação de tabelas e dados iniciais
-- `Scripts/isptec_queries.sql` - Exemplos de queries SQL
+- [Scripts/isptec_database.sql](./MiniProjecto02/Scripts/isptec_database.sql) - Criação de tabelas e dados iniciais
+- [Scripts/isptec_queries.sql](./MiniProjecto02/Scripts/isptec_queries.sql) - Exemplos de queries SQL
 
 ## Como Executar
 

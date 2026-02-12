@@ -9,8 +9,8 @@ Exame de Banco de Dados 1 - Componente Prática (50%)
 ## Estrutura do Projeto
 Este projecto é composto por:
 - `MiniProjecto01` - Preparação para o Exame
-- `MiniProjecto02` - Exame
-  - `Program.cs`
+- `MiniProjecto02`
+  - `Program.cs` - Exame
 
 Em `MiniProjecto02`:
 - [Scripts/isptec_database.sql](./MiniProjecto02/Scripts/isptec_database.sql) - Criação de tabelas e dados iniciais
